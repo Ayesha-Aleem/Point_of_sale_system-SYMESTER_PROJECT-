@@ -1,0 +1,71 @@
+//CODE for database -ERD
+create database point_of_sale_system
+use point_of_sale_system
+
+---Supplier
+create table Supplier(ID int identity (1,1)  primary key ,[Name] varchar(25) not null,[Address] varchar(225) not null)
+--Manager
+create table Manager(ID int identity (1,1) primary key ,
+                     [Name] varchar(225) not null,
+					 [Address] varchar(225) not null,
+					 HireDate date  not null,
+					 Salary int  not null check (Salary between 10000 and 1000000),
+					 DOB date not null)
+
+-- inventory 
+
+create table Inventory(ID int identity (1,1) primary key  ,
+                       Total_Stock int  not null,
+					   Product_ID int  ,
+					   ManagerID int  foreign key(ManagerID) references Manager(ID))
+
+
+--Employees
+create table Employee(ID int identity (1,1) primary key ,
+                     [Name] varchar(225) not null,
+					 [Address] varchar(225) not null,
+                     Job varchar(225) not null,
+					 HireDate date not null,
+					 Salary int check (Salary between 10000 and 70000) not null,
+					 DOB date not null,
+					 ManagerID int foreign key(ManagerID) references Manager(ID))
+
+
+
+--Cashier
+
+create table Cashier(ID int identity (1,1) FOREIGN KEY (ID) REFERENCES Employee(ID),
+                     [Name] varchar(225) not null,
+					 [Address] varchar(225) not null,
+					  HireDate date not null,
+					 Salary int check (Salary between 20000 and 90000) not null,
+					 DOB date not null,
+					 ManagerID int foreign key(ManagerID) references Manager(ID)
+					 Constraint PK_PER primary key (ID))
+
+
+-- Customer_Order
+create table Customer_Order(ID int identity (1,1) primary key  ,
+                            Product_ID int  unique   ,
+                            items_Count int check (items_Count between 1 and 100) not null,
+							Cashier_ID int foreign key(Cashier_ID) references Cashier(ID) )
+--Supplier order table
+create table Supplier_Order(ID int  identity (1,1) primary key ,
+                    SupplierID int  foreign key(SupplierID) references Supplier(ID),
+	                ManagerID int  foreign key(ManagerID) references Manager(ID),
+			       ProductID int ,
+                   itemsQuantity int not null check (itemsQuantity between 1 and 100),
+				   PurchasingCost int not null )
+						
+--Products
+create table Product(ID int primary key , 
+                     [Name] varchar(225) not null , 
+					 Quantity INT   not null ,
+					 MFG date not null,
+					 [EXP] date not null,
+					 price int  not null,
+					 Supplier_OrderID int  foreign key(Supplier_OrderID) references Supplier_Order(ID),
+					 InventoryID int foreign key(InventoryID) references Inventory(ID),
+
+					 Customer_OrderID int  foreign key(Customer_OrderID) references Customer_Order(ID),
+					 Customer_OrderProductID int  foreign key(Customer_OrderProductID) references Customer_Order(Product_ID))
